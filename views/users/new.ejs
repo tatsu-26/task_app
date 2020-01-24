@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+</head>
+<body>
+  <h1>新規登録</h1>
+  <form method="post" action="/users/create">
+  name: <input type="text" name="name">
+  email: <input type="text" name="email">
+  password: <input type="text" name="password">
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <input type="submit">
+  </form> 
+</body>
+</html>
