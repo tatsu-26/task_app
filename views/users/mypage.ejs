@@ -1,1 +1,8 @@
 <div>ログイン完了</div>
+
+<div>
+  <% if (typeof user !== 'undefined') { %>
+      <span class="login-user"><%= name %>さんとしてログインしています</span>
+  <% } %>
+</div>
+<button><a href="/logout">ログアウト</a></button>
