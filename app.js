@@ -29,21 +29,30 @@ var sessionStore = new MySQLStore(options);
 
 const { Sequelize } = require("sequelize");
 const db = require("./models/index");
-const sequelize = new Sequelize("database", "user", "password", { 
-  host: "localhost",
-  dialect: "mysql"
-})
-try {
-  await.sequelize.authenticate();
-  console.log("Connection has been established successfully");
+const host     = 'localhost';
+const database = 'express_db';
+const username = 'root';
+const password = '';
 
-} catch (error) {
-  console.error("unabel")
-}
-// db.users.findAll({}).then((instances) => {
-//   console.log(instances);
-// });
-
+// sequelize接続
+const sequelize = new Sequelize(database, username, password, {
+  host: host,
+  dialect: 'mysql',
+});
+sequelize.authenticate()
+  .then(()       => { console.log('Success test connection');        })
+  .catch((error) => { console.log('Failure test connection', error); });
+  
+  const UserModel = sequelize.define("user", {
+    id: {field: "id", type: Sequelize.INTEGER(11), primaryKey: true, autoIncrement: true}
+  })
+  // UserModel.findAll({
+  //   where: {
+  //     id: 3
+  //   }
+  // }).then((result) =>{
+  //   console.log(reault)
+  // })
 
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs"); //テンプレートエンジンを指定
