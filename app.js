@@ -27,6 +27,23 @@ var options = {
 };
 var sessionStore = new MySQLStore(options);
 
+const { Sequelize } = require("sequelize");
+const db = require("./models/index");
+const sequelize = new Sequelize("database", "user", "password", { 
+  host: "localhost",
+  dialect: "mysql"
+})
+try {
+  await.sequelize.authenticate();
+  console.log("Connection has been established successfully");
+
+} catch (error) {
+  console.error("unabel")
+}
+// db.users.findAll({}).then((instances) => {
+//   console.log(instances);
+// });
+
 
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs"); //テンプレートエンジンを指定
