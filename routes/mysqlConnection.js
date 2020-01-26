@@ -9,6 +9,5 @@ var options = {
 }
 
 var con = mysql.createPool(options);
-var sessionStore = new MySQLStore({}, con)
 
 module.exports = con;

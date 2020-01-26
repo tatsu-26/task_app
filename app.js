@@ -1,16 +1,16 @@
-var express = require("express");
-var logger = require("morgan");
-var session = require("express-session");
-var methodOverride = require("method-override");
+var express = require("express"); //node用のwebフレームワーク
+var logger = require("morgan"); //ログ出力
+var session = require("express-session"); //セッション管理
+var methodOverride = require("method-override"); //putやdeleteメソッドに対応
 var app = express();
   user = require("./routes/user");
-var bodyParser = require("body-parser");
-var MySQLStore = require("express-mysql-session")(session);
-var csrf = require("csurf");
-var csrfProtection = csrf({ cookie: true});
+var bodyParser = require("body-parser"); //POSTメソッドをJSON形式で送信してくれる
+var MySQLStore = require("express-mysql-session")(session); //セッションデータを保存するデータベーステーブルを作成
+var csrf = require("csurf"); //csrf対策
+var csrfProtection = csrf({ cookie: true });
 var cookieParser = require("cookie-parser");
-var parseForm = bodyParser.urlencoded({ extended: false });
-var tokens = new csrf();
+// var parseForm = bodyParser.urlencoded({ extended: false });
+var bcrypt = require('bcrypt'); 
 var options = {
   host: "localhost",
   port: 3306,
@@ -27,8 +27,9 @@ var options = {
 };
 var sessionStore = new MySQLStore(options);
 
+
 app.set("views", __dirname + "/views");
-app.set("view engine", "ejs");
+app.set("view engine", "ejs"); //テンプレートエンジンを指定
 if (app.get("env") === "production"){
   app.set("trust proxy", 1);
   session.cookie.secure = true
@@ -49,17 +50,26 @@ app.use(methodOverride());
 app.use(logger("dev"));
 
 //csrf対策
-app.get("/users/new", csrfProtection, function(req, res, next) { 
-  res.render("users/new", )
+app.get("/users/new", csrfProtection, function(req, res) { 
+  console.log(req.session._csrf)
+  var secret = req.cookies._csrf
+  var saltRounds = 10;
+  // ソルトを生成
+  var salt = bcrypt.genSaltSync(saltRounds);
+  var hash = bcrypt.hashSync(secret, salt);
+  req.session._csrf = hash
+  res.render("users/new")
 });
-app.post("/", function (req, res) { 
-  var token = req.cookies._csrf;
-  if(csrfToken != token){
-    res.send('Invalid Token')
-  };
-  next();
+app.post("/users/create", function (req, res, next) {
+  if(req.session._csrf) { 
+    bcrypt.compare(req.cookies._csrf, req.session._csrf).then(function(res) { 
+      next();
+    })
+  }else{
+    res.redirect("/users/new");
+  }
 })
-//outiong
+//routiong
 app.get("/", user.index);
 app.get("/logout", user.logout);
 app.get("/users/new", user.new);
